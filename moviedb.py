@@ -14,8 +14,8 @@ exclude_list = exclude_list + exts + torrents
 
 def main():
 	#Creates the directories for storing movie data and images
-	if not os.path.exists("moviedb/images"):
-		os.makedirs("moviedb/images")
+	if not os.path.exists("moviedb"+os.path.sep+"images"):
+		os.makedirs("moviedb"+os.path.sep+"images")
 	
 	#
 	file_list = os.listdir(".")
@@ -50,7 +50,7 @@ def extract_contents(movie_name, json_string):
 			print "[-] Not Found " + movie_name
 		
 def save_movie(data):
-	f = open("moviedb/" + data[u"Title"] + ".htm" , "w")
+	f = open("moviedb"+os.path.sep + data[u"Title"] + ".htm" , "w")
 	html = format_as_html(data)
 	f.write(html.encode('utf8'))
 	f.close()
@@ -60,7 +60,7 @@ def format_as_html(data):
 	html += "<center><h2>" + data[u"Title"]+ "</h2></center>"
 	html += "<table margin=4><tr><td>"
 	if data["Poster"] != u"N/A":
-		html += "<img src='images/" + download(data[u"Poster"])+ "'>"
+		html += "<img src='images"+os.path.sep + download(data[u"Poster"])+ "'>"
 	
 	data.pop("Poster", None)
 	
@@ -74,8 +74,8 @@ def format_as_html(data):
 
 def download(url):
 	fn=url.split("/")[-1]
-	fpath = "moviedb/images/"+fn
-	urllib.urlretrieve(url,"moviedb/images/"+fn)
+	fpath = "moviedb"+os.path.sep+"images"+os.path.sep+fn
+	urllib.urlretrieve(url,fpath)
 	return fn
 	
 
