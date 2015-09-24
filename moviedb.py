@@ -7,7 +7,7 @@ import urllib2
 import thread
 
 exts = ['avi','mp4','mkv','3gp','mov']
-exclude_list = ['xvid','dvdscr','dvd','brrip','ddr','x264','aac','720p','1080p','bluray','rip','exclusive','eng','dvl']
+exclude_list = ['xvid','dvdscr', 'dvdrip','dvd','brrip','ddr','x264','aac','720p','1080p','bluray','rip','exclusive','eng','dvl']
 torrents = ['axxo','anoxmous','extratorrent','yify']
 
 exclude_list = exclude_list + exts + torrents
@@ -36,7 +36,7 @@ def fetch_and_save(movie_name):
 	url = "http://omdbapi.com/?t="+ url
 	json_string = urllib2.urlopen(url).read()
 	#print json_string
-	extract_contents(movie_name, json_string)	
+	extract_contents(movie_name, json_string)
 	
 def extract_contents(movie_name, json_string):
 	data = json.loads(json_string)
@@ -44,7 +44,10 @@ def extract_contents(movie_name, json_string):
 #		print "[+] Processing  :  " + data[u"Title"]
 		save_movie(data)
 	else:
-		print "[-] Not Found " + movie_name
+		if movie_name[-1] == "1":
+			fetch_and_save(movie_name[0:-1])
+		else:
+			print "[-] Not Found " + movie_name
 		
 def save_movie(data):
 	f = open("moviedb/" + data[u"Title"] + ".htm" , "w")
@@ -79,26 +82,22 @@ def download(url):
 def format_file_name(fn):
 	fn = fn.lower()
 	
+	if os.path.isfile(fn):
+		fn = fn[0:fn.rfind(".")]
 	# if check_ext(fn)==1 :
 		# return ""	
 	
 	for i in string.punctuation:
-		fn = fn.replace(i," ")
+		if i != "'":
+			fn = fn.replace(i," ")
 	fn = re.split('[1-9][0-9]{3}',fn)[0]
 	
 	for i in exclude_list:
-		fn = fn.replace(i,"")
+		if re.search(r"\b" + re.escape(i) + r"\b",fn):
+			fn = fn.replace(i,"")
 	
 	return fn.capitalize()
 
-def check_ext(fn):
-	fn = fn.strip()
-	print fn
-	ext = fn.split()[-1]
-	if ext in exts:
-		return 1
-	else:
-		return 0
 
 if __name__ == "__main__":
 	main()
